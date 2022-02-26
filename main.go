@@ -23,7 +23,7 @@ func printHelp(f string) {
 	helpArgs := []string{"-h", "--help", "help"}
 	for _, m := range helpArgs {
 		if f == m {
-			fmt.Println(helpMsg)
+			fmt.Printf(helpMsg)
 			os.Exit(0)
 		}
 	}
