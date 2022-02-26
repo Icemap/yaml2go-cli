@@ -1,57 +1,67 @@
 package main
 
 import (
-	"bufio"
-	"fmt"
-	"log"
-	"os"
-
 	"github.com/PrasadG193/yaml2go"
+	"github.com/spf13/cobra"
+	"io/ioutil"
+	"os"
 )
 
-const helpMsg = `yaml2go converts YAML specs to Go type definitions
+var (
+	rootCmd = &cobra.Command{
+		Use:   "yaml2go-cli",
+		Short: "yaml2go-cli is a cli-tool for yaml to go struct",
+		Run: func(cmd *cobra.Command, args []string) {
+			baFile, err := ioutil.ReadFile(*inputFile)
+			if err != nil {
+				panic(err)
+			}
 
-Usage:
-    yaml2go < /path/to/yamlspec.yaml
+			y2g := yaml2go.New()
+			strStruct, err := y2g.Convert(StupidYaml2GoStructName, baFile)
+			if err != nil {
+				panic(err)
+			}
 
-Examples:
-    yaml2go < test/example1.yaml
-    yaml2go < test/example1.yaml > example1.go
-`
+			strStruct = StructReplace(strStruct, *structName, *packageName)
+			err = ioutil.WriteFile(*outputFile, []byte(strStruct), 0644)
+			if err != nil {
+				panic(err)
+			}
 
-func printHelp(f string) {
-	helpArgs := []string{"-h", "--help", "help"}
-	for _, m := range helpArgs {
-		if f == m {
-			fmt.Printf(helpMsg)
-			os.Exit(0)
-		}
+			// adapter for unix
+			err = os.Chmod(*outputFile, 0644)
+			if err != nil {
+				panic(err)
+			}
+		},
+	}
+
+	inputFile   *string
+	outputFile  *string
+	structName  *string
+	packageName *string
+)
+
+func init() {
+	inputFile = rootCmd.PersistentFlags().StringP("input", "i", "", "input yaml file path")
+	outputFile = rootCmd.PersistentFlags().StringP("output", "o", "", "output go file path")
+	structName = rootCmd.PersistentFlags().StringP("struct", "s", "Default", "struct name")
+	packageName = rootCmd.PersistentFlags().StringP("package", "p", "main", "package name")
+
+	err := rootCmd.MarkPersistentFlagRequired("input")
+	if err != nil {
+		panic(err)
+	}
+
+	err = rootCmd.MarkPersistentFlagRequired("output")
+	if err != nil {
+		panic(err)
 	}
 }
 
 func main() {
-	// Read args
-	if len(os.Args) > 1 {
-		printHelp(os.Args[1])
+	if err := rootCmd.Execute(); err != nil {
+		panic(err)
 	}
-
-	// Read input from the console
-	var data string
-	scanner := bufio.NewScanner(os.Stdin)
-	for scanner.Scan() {
-		data += scanner.Text() + "\n"
-	}
-	if err := scanner.Err(); err != nil {
-		log.Fatal("Error while reading input:", err)
-	}
-
-	// Create yaml2go object and invoke Convert()
-	y2g := yaml2go.New()
-	result, err := y2g.Convert("Yaml2Go", []byte(data))
-	if err != nil {
-		log.Fatal("Invalid YAML")
-	}
-
-	fmt.Printf(result)
-	return
 }

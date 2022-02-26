@@ -15,13 +15,25 @@ go install github.com/Icemap/yaml2go-cli@latest
 ## Show Help
 
 ```bash
-yaml2go --help
-yaml2go converts YAML specs to Go type definitions
+./yaml2go-cli -h                                    
+yaml2go-cli is a cli-tool for yaml to go struct
 
 Usage:
-    yaml2go < /path/to/yamlspec.yaml
+  yaml2go-cli [flags]
 
-Examples:
-    yaml2go < test/example1.yaml
-    yaml2go < test/example1.yaml > example1.go
+Flags:
+  -h, --help             help for yaml2go-cli
+  -i, --input string     input yaml file path
+  -o, --output string    output go file path
+  -p, --package string   package name (default "main")
+  -s, --struct string    struct name (default "Default")
 ```
+
+## Example
+
+```
+./yaml2go-cli -i test/test.yaml -o test/test.bean.go
+```
+
+- [test/test.yaml](test/test.yaml)
+- [test/test.bean.go](test/test.bean.go)
