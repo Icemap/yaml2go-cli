@@ -1,4 +1,4 @@
-module yaml2go-cli
+module github.com/Icemap/yaml2go-cli
 
 go 1.17
 
