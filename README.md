@@ -32,8 +32,8 @@ Flags:
 ## Example
 
 ```
-./yaml2go-cli -i test/test.yaml -o test/test.bean.go
+./yaml2go-cli -i test/test.yaml -o test/test.bean.file
 ```
 
 - [test/test.yaml](test/test.yaml)
-- [test/test.bean.go](test/test.bean.go)
+- [test/test.bean.file](test/test.bean.file)
